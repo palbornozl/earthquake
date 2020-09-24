@@ -40,7 +40,6 @@ public class Utils {
 
   @SneakyThrows
   public static Timestamp getStringToDateFormatComplete(String dateString) {
-    return new Timestamp(
-        ((Date) (new SimpleDateFormat(DATE_FORMAT_YMD)).parse(dateString)).getTime());
+    return new Timestamp((new SimpleDateFormat(DATE_FORMAT_YMD)).parse(dateString).getTime());
   }
 }
