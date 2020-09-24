@@ -6,7 +6,7 @@ con los siguientes endpoints, con contratos de entrada y salida formato json,
 donde cada endpoint deberá hacer uso la API mencionada para obtener la información
 solicitada (llamar a API segun especificacion de la misma).
 
-###Contratos entrada
+### Contratos entrada
 - **/dates**: Consultar terremotos entre dos fechas y una magnitud mínima
 
 *Contrato de entrada:*
@@ -26,7 +26,7 @@ solicitada (llamar a API segun especificacion de la misma).
   "magnitudeMaxima": 7.1
 }
 ```
-###Contrato salida
+### Contrato salida
 En ambos casos deberá retornar el siguiente contrato de salida:
 ```json
 {
@@ -42,7 +42,7 @@ En ambos casos deberá retornar el siguiente contrato de salida:
   "title": "M 1.1 - 117km NW of Talkeetna, Alaska"
 }
 ```
-###Base de Datos
+### Base de Datos
 El resultado es almacenado en una base de datos relacional embebida (H2), cuya tabla debe ser:
 
 *Schema*: earthquake
@@ -58,8 +58,8 @@ El resultado es almacenado en una base de datos relacional embebida (H2), cuya t
 |magnitud_max|Magnitud maxima busqueda
 |salida|Resultado busqueda (json)
 
-##Ejecución
-####Maven
+## Ejecución
+#### Maven
 Requisitos 
 - jdk11
 - maven 3.6.3
@@ -68,7 +68,7 @@ Ejecutar comando:
 
 `mvn clean install -DDB_URL=jdbc:h2:mem:earthquake -DDB_USER=sa -DDB_PASSWORD=password -DDB_DIALECT=H2Dialect -DDB_DRIVER=org.h2.Driver -DLOG_LEVEL=INFO`
 
-####Docker
+#### Docker
 Ejecutar comando: 
 
 `docker-compose -f docker-compose.yml up -d --build`
