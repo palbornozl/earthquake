@@ -72,6 +72,13 @@ Requisitos
 - docker / docker-compose
 - Rest Client
 
+#### Docker
+Ejecutar comando: 
+
+`docker-compose -f docker-compose.yml up -d --build zookeeper`
+
+`docker-compose -f docker-compose.yml up -d --build kafka`
+
 #### Maven
 Ejecutar comando: 
 
@@ -86,11 +93,9 @@ mvn clean install
     -DKAFKA_HOST=localhost 
     -DKAFKA_PORT=9092
 ```
+Una vez generado el archivo *target/earthquake-1.0.0.jar* ejecutar:
 
-#### Docker
-Ejecutar comando: 
-
-`docker-compose -f docker-compose.yml up -d --build`
+`docker-compose -f docker-compose.yml up -d --build earthquake`
 
 #### Rest Client
 - Importar archivo restClientEarthquake.json
