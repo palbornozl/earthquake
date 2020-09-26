@@ -51,7 +51,8 @@ El resultado es almacenado en una base de datos relacional embebida (H2), cuya t
 |nombre campo|observaciones
 |---|---|
 |create_at|Llave primaria, fecha de insercion registro, valor por defecto
-|campo|cual de los endpoint fue llamado
+|origen| POST / KAFKA clasificion de quien persiste
+|observacion|descripcion de el origen
 |fecha_inicio|Fecha inicio búsqueda
 |fecha_fin|Fecha fin búsqueda
 |magnitud_min|Magnitud minima busqueda
@@ -66,7 +67,17 @@ Requisitos
 
 Ejecutar comando: 
 
-`mvn clean install -DDB_URL=jdbc:h2:mem:earthquake -DDB_USER=sa -DDB_PASSWORD=password -DDB_DIALECT=H2Dialect -DDB_DRIVER=org.h2.Driver -DLOG_LEVEL=INFO`
+```shell script
+mvn clean install 
+    -DDB_URL=jdbc:h2:mem:earthquake 
+    -DDB_USER=sa 
+    -DDB_PASSWORD=password 
+    -DDB_DIALECT=H2Dialect 
+    -DDB_DRIVER=org.h2.Driver 
+    -DLOG_LEVEL=INFO
+    -DKAFKA_HOST=localhost 
+    -DKAFKA_PORT=9092
+```
 
 #### Docker
 Ejecutar comando: 

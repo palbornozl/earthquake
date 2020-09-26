@@ -33,8 +33,11 @@ public class EarthquakeModel implements Serializable {
   @Column(name = "created_at")
   private Timestamp createdAt;
 
-  @Column(name = "campo")
-  private String campo;
+  @Column(name = "origen")
+  private String origen;
+
+  @Column(name = "observacion")
+  private String observacion;
 
   @Column(name = "fecha_inicio")
   private Timestamp fechaInicio;

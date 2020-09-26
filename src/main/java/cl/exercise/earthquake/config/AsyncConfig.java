@@ -10,7 +10,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Configuration
 @EnableAsync
 @Slf4j
-public class AsyncConfiguration {
+public class AsyncConfig {
   @Bean(name = "taskExecutor")
   public Executor taskExecutor() {
     log.debug("Creating Async Task Executor");

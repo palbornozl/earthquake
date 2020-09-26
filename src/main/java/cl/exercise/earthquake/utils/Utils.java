@@ -1,5 +1,6 @@
 package cl.exercise.earthquake.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,5 +42,11 @@ public class Utils {
   @SneakyThrows
   public static Timestamp getStringToDateFormatComplete(String dateString) {
     return new Timestamp((new SimpleDateFormat(DATE_FORMAT_YMD)).parse(dateString).getTime());
+  }
+
+  @SneakyThrows
+  public static boolean isJSONValid(String jsonInString) {
+    new ObjectMapper().readTree(jsonInString);
+    return true;
   }
 }
