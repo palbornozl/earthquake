@@ -75,9 +75,7 @@ Requisitos
 #### Docker
 Ejecutar comando: 
 
-`docker-compose -f docker-compose.yml up -d --build zookeeper`
-
-`docker-compose -f docker-compose.yml up -d --build kafka`
+`docker-compose -f docker-compose.yml up -d --build zookeeper kafka`
 
 #### Maven
 Ejecutar comando: 
@@ -105,5 +103,12 @@ Una vez generado el archivo *target/earthquake-1.0.0.jar* ejecutar:
 #### Acceso a BD
 Vía browser http://localhost:8099/searchEarthquake/h2-console
 - JDBC URL: `jdbc:h2:mem:earthquake`
-- User Name: sa
-- Password: password
+- User Name: `sa`
+- Password: `password`
+
+Para terminar se ejecuta:
+
+`docker-compose -f docker-compose.yml stop earthquake kafka zookeeper`
+
+#### PS.
+Para ambientes con **zsh** puede ejecutar el script `run.sh`
