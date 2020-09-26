@@ -59,12 +59,20 @@ El resultado es almacenado en una base de datos relacional embebida (H2), cuya t
 |magnitud_max|Magnitud maxima busqueda
 |salida|Resultado busqueda (json)
 
+## Componentes
+- SpringBoot
+- H2 DB
+- Kafka Producer/Consumer
+- JWT Auth0
+
 ## Ejecución
-#### Maven
 Requisitos 
 - jdk11
 - maven 3.6.3
+- docker / docker-compose
+- Rest Client
 
+#### Maven
 Ejecutar comando: 
 
 ```shell script
@@ -83,3 +91,8 @@ mvn clean install
 Ejecutar comando: 
 
 `docker-compose -f docker-compose.yml up -d --build`
+
+#### Rest Client
+- Importar archivo restClientEarthquake.json
+- Ejecutar token
+- Para los otros rest se debe cambiar el token Bearer con el obtenido 
