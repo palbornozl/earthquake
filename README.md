@@ -101,3 +101,9 @@ Una vez generado el archivo *target/earthquake-1.0.0.jar* ejecutar:
 - Importar archivo restClientEarthquake.json
 - Ejecutar token
 - Para los otros rest se debe cambiar el token Bearer con el obtenido 
+
+#### Acceso a BD
+Vía browser http://localhost:8099/searchEarthquake/h2-console
+- JDBC URL: `jdbc:h2:mem:earthquake`
+- User Name: sa
+- Password: password
