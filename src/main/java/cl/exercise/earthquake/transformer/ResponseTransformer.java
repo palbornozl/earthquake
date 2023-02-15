@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +54,7 @@ public class ResponseTransformer {
     return responses;
   }
   @SneakyThrows
-  public EarthquakeModel transformRequestToEarthquakeModel(EarthquakeRequest request, List<EarthquakeApiResponse> responses){
+  public EarthquakeModel transformRequestToEarthquakeModel(EarthquakeRequest request, Object responses, String origen){
     return EarthquakeModel.builder()
         .fechaInicio(
             StringUtils.isEmpty(request.getFechaInicio())
@@ -63,14 +64,15 @@ public class ResponseTransformer {
             StringUtils.isEmpty(request.getFechaFin())
                 ? null
                 : getStringToDateFormatComplete(request.getFechaFin()))
-        .origen("POST")
+        .origen(origen.toUpperCase(Locale.ENGLISH))
         .observacion(
             StringUtils.isEmpty(request.getFechaInicio())
-                ? "Buscando magnitudes"
-                : "Buscando por fechas y magnitude min")
+                ? origen.toUpperCase(Locale.ENGLISH) + " Buscando magnitudes"
+                : origen.toUpperCase(Locale.ENGLISH) + " Buscando por fechas y magnitude min")
         .magnitudMin(request.getMagnitudeMin())
         .magnitudMax(request.getMagnitudeMax())
         .salida(new ObjectMapper().writeValueAsString(responses))
+        .token(request.getUserToken())
         .build();
   }
 

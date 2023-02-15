@@ -19,9 +19,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public final class ProducerService {
 
-  private final KafkaTemplate<String, String> kafkaTemplate;
   @Value(value = "${spring.kafka.template.default-topic}")
   private static String topic;
+  private final KafkaTemplate<String, String> kafkaTemplate;
 
   @Autowired
   public ProducerService(KafkaTemplate<String, String> kafkaTemplate) {

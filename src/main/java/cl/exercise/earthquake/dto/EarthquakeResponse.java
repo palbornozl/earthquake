@@ -20,6 +20,9 @@ import lombok.ToString;
 @ToString
 @Builder
 public class EarthquakeResponse {
+  @JsonProperty("identify")
+  private String id;
+
   @JsonProperty("fechaConsulta")
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_FORMAT_YMD)
   @DateConstraint
@@ -48,7 +51,7 @@ public class EarthquakeResponse {
   @JsonFormat(shape = Shape.NUMBER_FLOAT)
   private Float magnitudeMax;
 
-  @JsonProperty("resultado")
-  private String salida;
+  @JsonProperty("token_origen")
+  private String token;
 
 }

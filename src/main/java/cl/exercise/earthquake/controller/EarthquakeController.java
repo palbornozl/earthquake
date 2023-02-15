@@ -1,5 +1,7 @@
 package cl.exercise.earthquake.controller;
 
+import static cl.exercise.earthquake.security.JWTConstants.HEADER_STRING;
+import static cl.exercise.earthquake.security.JWTConstants.TOKEN_PREFIX;
 import static cl.exercise.earthquake.utils.Utils.DATE_FORMAT_YMD;
 import static cl.exercise.earthquake.utils.Utils.validatesDates;
 
@@ -20,6 +22,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,7 +44,8 @@ public class EarthquakeController {
   @SneakyThrows
   @PostMapping("/dates")
   public ResponseEntity<List<EarthquakeApiResponse>> findByDates(
-      @Valid @RequestBody EarthquakeRequest request, BindingResult result) {
+      @Valid @RequestBody EarthquakeRequest request, BindingResult result,
+      @RequestHeader(value = HEADER_STRING) String token) {
     if (StringUtils.isEmpty(request.getFechaInicio())
         || StringUtils.isEmpty(request.getFechaFin())
         || result.hasErrors()) {
@@ -59,6 +63,7 @@ public class EarthquakeController {
               + " es mayor que fechaFin: "
               + request.getFechaFin());
     }
+    request.setUserToken(token.replace(TOKEN_PREFIX, "").trim());
     List<EarthquakeApiResponse> response = service.getInfoByDateAndMinMagnitude(request);
     return new ResponseEntity<>(response, response == null ? HttpStatus.NO_CONTENT : HttpStatus.OK);
   }
@@ -66,11 +71,13 @@ public class EarthquakeController {
   @SneakyThrows
   @PostMapping("/magnitudes")
   public ResponseEntity<List<EarthquakeApiResponse>> findByMagnitudes(
-      @Valid @RequestBody EarthquakeRequest request) {
+      @Valid @RequestBody EarthquakeRequest request,
+      @RequestHeader(value = HEADER_STRING) String token) {
 
     if (request.getMagnitudeMin() > request.getMagnitudeMax())
       throw new IllegalArgumentException("[Error] Magnitud Min es mayor que Magnitude Max");
 
+    request.setUserToken(token.replace(TOKEN_PREFIX, "").trim());
     List<EarthquakeApiResponse> response = service.getInfoByMagnitudes(request);
     return new ResponseEntity<>(response, response == null ? HttpStatus.NO_CONTENT : HttpStatus.OK);
   }

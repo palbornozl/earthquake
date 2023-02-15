@@ -1,12 +1,11 @@
 package cl.exercise.earthquake.message.consumer;
 
-import static cl.exercise.earthquake.utils.Utils.getStringToDateFormatComplete;
 import static cl.exercise.earthquake.utils.Utils.isJSONValid;
 
 import cl.exercise.earthquake.dto.EarthquakeApiResponse;
 import cl.exercise.earthquake.dto.EarthquakeRequest;
-import cl.exercise.earthquake.model.EarthquakeModel;
 import cl.exercise.earthquake.repository.EarthquakeRepository;
+import cl.exercise.earthquake.transformer.ResponseTransformer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import lombok.SneakyThrows;
@@ -18,7 +17,6 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 @Service
 @PropertySource({"classpath:kafka-${spring.profiles.active:default}.properties"})
@@ -26,9 +24,11 @@ import org.springframework.util.StringUtils;
 @Slf4j
 public final class ConsumerService {
   final EarthquakeRepository repository;
+  final ResponseTransformer transformer;
 
-  public ConsumerService(EarthquakeRepository repository) {
+  public ConsumerService(EarthquakeRepository repository, ResponseTransformer transformer) {
     this.repository = repository;
+    this.transformer = transformer;
   }
 
   @KafkaListener(
@@ -74,24 +74,6 @@ public final class ConsumerService {
   @SneakyThrows
   private void save(EarthquakeRequest request, EarthquakeApiResponse responses) {
     log.debug("--> saving {}", request.toString());
-    repository.save(
-        EarthquakeModel.builder()
-            .fechaInicio(
-                StringUtils.isEmpty(request.getFechaInicio())
-                    ? null
-                    : getStringToDateFormatComplete(request.getFechaInicio()))
-            .fechaFin(
-                StringUtils.isEmpty(request.getFechaFin())
-                    ? null
-                    : getStringToDateFormatComplete(request.getFechaFin()))
-            .origen("KAFKA")
-            .observacion(
-                StringUtils.isEmpty(request.getFechaInicio())
-                    ? "[kafka] Buscando magnitudes"
-                    : "[kafka] Buscando por fechas y magnitude min")
-            .magnitudMin(request.getMagnitudeMin())
-            .magnitudMax(request.getMagnitudeMax())
-            .salida(new ObjectMapper().writeValueAsString(responses))
-            .build());
+    repository.save(transformer.transformRequestToEarthquakeModel(request,responses, "KAFKA"));
   }
 }

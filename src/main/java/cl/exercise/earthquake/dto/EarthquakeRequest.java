@@ -48,4 +48,7 @@ public class EarthquakeRequest {
   @Min(value = 0, message = "magnitudeMaxima debe ser [0,10]")
   @Max(value = 10, message = "magnitudeMaxima debe ser [0,10]")
   private Float magnitudeMax;
+
+  @JsonProperty("token")
+  private String userToken;
 }

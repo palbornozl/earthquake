@@ -4,6 +4,7 @@ import cl.exercise.earthquake.dto.EarthquakeApiResponse;
 import cl.exercise.earthquake.dto.EarthquakeRequest;
 import cl.exercise.earthquake.dto.EarthquakeResponse;
 import cl.exercise.earthquake.message.producer.ProducerService;
+import cl.exercise.earthquake.model.EarthquakeModel;
 import cl.exercise.earthquake.repository.EarthquakeRepository;
 import cl.exercise.earthquake.transformer.ResponseTransformer;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -78,14 +79,17 @@ public class EarthquakeInternalService {
   @SneakyThrows
   private void save(EarthquakeRequest request, List<EarthquakeApiResponse> responses) {
     log.debug("--> saving {}", request.toString());
-    repository.save(transformer.transformRequestToEarthquakeModel(request,responses));
+    repository.save(transformer.transformRequestToEarthquakeModel(request,responses, "POST"));
   }
 
+  @SneakyThrows
   public List<EarthquakeResponse> getAll(){
     log.debug("-->getting all");
     List<EarthquakeResponse> earthquakeResponses = new LinkedList<>();
-    repository.findAll().forEach(m -> earthquakeResponses.add(
+    List<EarthquakeModel> earthquakeModel = repository.findByOrigen("KAFKA");
+    earthquakeModel.forEach(m -> earthquakeResponses.add(
         EarthquakeResponse.builder()
+            .id(m.getId().toString())
             .createdAt(m.getCreatedAt().toString())
             .fechaInicio(m.getFechaInicio().toString())
             .fechaFin(m.getFechaFin().toString())
@@ -93,6 +97,7 @@ public class EarthquakeInternalService {
             .magnitudeMax(m.getMagnitudMax())
             .observacion(m.getObservacion())
             .origen(m.getOrigen())
+            .token(m.getToken())
             .build()
     ));
     return earthquakeResponses;

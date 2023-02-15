@@ -3,8 +3,10 @@ package cl.exercise.earthquake.model;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.PrePersist;
@@ -15,9 +17,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 @Entity
-@Table(name = "earthquake", schema = "earthquake")
+@Table(name = "tbl_earthquake", schema = "earthquake")
 @IdClass(EarthquakeModel.class)
 @AllArgsConstructor
 @NoArgsConstructor
@@ -30,6 +34,12 @@ public class EarthquakeModel implements Serializable {
   private static final long serialVersionUID = 1L;
 
   @Id
+  @GeneratedValue(generator = "UUID")
+  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @Column(name = "id", updatable = false, nullable = false)
+  @Type(type = "uuid-char")
+  private UUID id;
+
   @Column(name = "created_at")
   private Timestamp createdAt;
 
@@ -54,10 +64,20 @@ public class EarthquakeModel implements Serializable {
   @Column(name = "salida")
   private String salida;
 
+  @Column(name = "token")
+  private String token;
+
   @PrePersist
   protected void prePersist() {
     if (this.createdAt == null) {
       createdAt = Timestamp.from(Instant.now());
+      if(this.fechaInicio == null){
+        this.fechaInicio = createdAt;
+        this.fechaFin = createdAt;
+      }
+    }
+    if(this.magnitudMax == null){
+      this.magnitudMax = 0.0f;
     }
   }
 }

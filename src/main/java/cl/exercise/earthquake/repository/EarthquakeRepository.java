@@ -1,8 +1,13 @@
 package cl.exercise.earthquake.repository;
 
 import cl.exercise.earthquake.model.EarthquakeModel;
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+import java.util.UUID;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface EarthquakeRepository extends JpaRepository<EarthquakeModel, Long> {}
+public interface EarthquakeRepository extends CrudRepository<EarthquakeModel, UUID> {
+  List<EarthquakeModel> findByOrigen(@Param("origen") String origen);
+}
