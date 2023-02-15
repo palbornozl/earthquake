@@ -1,5 +1,7 @@
 package cl.exercise.earthquake.security;
 
+import static cl.exercise.earthquake.security.JWTConstants.SECRET_PASSWORD;
+
 import java.util.ArrayList;
 import lombok.SneakyThrows;
 import org.springframework.security.core.userdetails.User;
@@ -17,11 +19,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     if (USER_NAME.equals(username)) {
-      User user = new User(
-          USER_NAME,
-          "$2y$12$8j5UDuBj/3FtV.TlOKUV3.vFP.6VccAJX9/ntV/PNGS.0gjgXlDLa",
-          new ArrayList<>());
-      return user;
+      return new User(USER_NAME,SECRET_PASSWORD,new ArrayList<>());
     } else {
       throw new UsernameNotFoundException("User not found with username: " + username);
     }

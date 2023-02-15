@@ -1,7 +1,7 @@
 package cl.exercise.earthquake.message.producer;
 
-import cl.exercise.earthquake.transformer.BasicRequest;
-import cl.exercise.earthquake.transformer.EarthquakeResponse;
+import cl.exercise.earthquake.dto.EarthquakeApiResponse;
+import cl.exercise.earthquake.dto.EarthquakeRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.SneakyThrows;
@@ -21,7 +21,7 @@ public final class ProducerService {
 
   private final KafkaTemplate<String, String> kafkaTemplate;
   @Value(value = "${spring.kafka.template.default-topic}")
-  private String TOPIC;
+  private static String topic;
 
   @Autowired
   public ProducerService(KafkaTemplate<String, String> kafkaTemplate) {
@@ -29,12 +29,12 @@ public final class ProducerService {
   }
 
   @SneakyThrows
-  public void sendMessage(BasicRequest request, EarthquakeResponse response) {
+  public void sendMessage(EarthquakeRequest request, EarthquakeApiResponse response) {
     ObjectMapper mapper = new ObjectMapper();
     ObjectNode result = mapper.createObjectNode();
     result.put("request", mapper.writeValueAsString(request));
     result.put("response", mapper.writeValueAsString(response));
-    this.kafkaTemplate.send(TOPIC, response.getMagnitude().toString(), result.toPrettyString());
+    this.kafkaTemplate.send(topic, response.getMagnitude().toString(), result.toPrettyString());
     log.info(String.format("$$ -> Producing message --> %s", result.asText()));
   }
 }

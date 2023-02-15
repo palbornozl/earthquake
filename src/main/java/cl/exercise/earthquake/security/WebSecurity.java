@@ -16,9 +16,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 
-  private UserDetailsServiceImpl userDetailsService;
+  private final UserDetailsServiceImpl userDetailsService;
 
-  private BCryptPasswordEncoder bCryptPasswordEncoder;
+  private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
   public WebSecurity(
       UserDetailsServiceImpl userDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder) {
@@ -28,21 +28,24 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
   @SneakyThrows
   @Override
-  protected void configure(HttpSecurity http) throws Exception {
+  protected void configure(HttpSecurity http) {
     http.cors()
         .and()
         .csrf()
         .disable()
         .authorizeRequests()
         .antMatchers(HttpMethod.POST, "/authenticate")
-        .permitAll()
-        .anyRequest()
+        .anonymous()
+        .antMatchers("/earthquake/h2-console/**")
+        .anonymous()
+        .antMatchers("/earthquake/search/**")
         .authenticated()
         .and()
         .addFilter(new JWTAuthenticationFilter(authenticationManager()))
         .addFilter(new JWTAuthorizationFilter(authenticationManager()))
         .sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    http.headers().frameOptions().disable();
   }
 
   @Override

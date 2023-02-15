@@ -16,7 +16,7 @@ import reactor.netty.tcp.TcpClient;
 @Component
 public class WebClientConfig {
 
-  private final String BASE_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson";
+  private static final String BASE_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson";
 
   @Bean
   public WebClient getWebClient() {

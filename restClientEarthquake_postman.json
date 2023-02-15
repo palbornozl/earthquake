@@ -1,0 +1,122 @@
+{
+	"info": {
+		"_postman_id": "a0b4df3a-c3c6-4268-8578-c88eee503257",
+		"name": "earthquake",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "797610"
+	},
+	"item": [
+		{
+			"name": "token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"postman.setEnvironmentVariable(\"token\", jsonData.token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"username\": \"admin\",\r\n\t\"password\": \"my5ecre7P@ssw0rd\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/authenticate",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"authenticate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "search_by_dates",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"fechaInicio\": \"2020-09-01\",\r\n\t\"fechaFin\": \"2020-09-03\",\r\n\t\"magnitudeMinima\": 6.5\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/search/dates",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"search",
+						"dates"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "search_by_magnitudes",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"magnitudeMinima\": 7.0,\r\n\t\"magnitudeMaxima\": 7.5\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/search/magnitudes",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"search",
+						"magnitudes"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

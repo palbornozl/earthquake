@@ -16,6 +16,9 @@ public class Utils {
 
   public static final String DATE_FORMAT_COMPLETE = "EEEE, MMMM dd, yyyy hh:mm:ss.SSS a";
 
+  Utils() {
+  }
+
   @SneakyThrows
   public static boolean validatesDates(String init, String end) {
     SimpleDateFormat sdformat = new SimpleDateFormat(DATE_FORMAT_YMD);

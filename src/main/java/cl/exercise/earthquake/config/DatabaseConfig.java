@@ -1,10 +1,6 @@
 package cl.exercise.earthquake.config;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Properties;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,18 +31,12 @@ public class DatabaseConfig {
     super();
   }
 
-  private static String getPropertyAsString(Properties prop) {
-    StringWriter writer = new StringWriter();
-    prop.list(new PrintWriter(writer));
-    return writer.getBuffer().toString();
-  }
-
   @Bean
-  public LocalContainerEntityManagerFactoryBean earthquakeEntityManager() throws SQLException {
+  public LocalContainerEntityManagerFactoryBean earthquakeEntityManager() {
 
     final LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
     final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-    final HashMap<String, Object> properties = new HashMap<String, Object>();
+    final HashMap<String, Object> properties = new HashMap<>();
 
     properties.put("hibernate.dialect", env.getProperty("db.earthquake.dialect"));
 
@@ -54,11 +44,6 @@ public class DatabaseConfig {
     em.setPackagesToScan("cl.exercise.earthquake.model");
     em.setJpaVendorAdapter(vendorAdapter);
     em.setJpaPropertyMap(properties);
-
-    log.info("earthquakeConfig...");
-    log.info("--> env db {}", em.getDataSource().getConnection());
-    log.info("--> jpa db {}", em.getJpaPropertyMap());
-    log.info("--> vendor db {}", em.getJpaVendorAdapter().toString());
 
     return em;
   }
@@ -70,7 +55,7 @@ public class DatabaseConfig {
   }
 
   @Bean(name = "transactionManagerEarthquake")
-  public PlatformTransactionManager earthquakeTransactionManager() throws SQLException {
+  public PlatformTransactionManager earthquakeTransactionManager() {
     final JpaTransactionManager transactionManagerEarthquake = new JpaTransactionManager();
     transactionManagerEarthquake.setEntityManagerFactory(earthquakeEntityManager().getObject());
     return transactionManagerEarthquake;

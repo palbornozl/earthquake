@@ -3,11 +3,10 @@ package cl.exercise.earthquake.controller;
 import static cl.exercise.earthquake.utils.Utils.DATE_FORMAT_YMD;
 import static cl.exercise.earthquake.utils.Utils.validatesDates;
 
+import cl.exercise.earthquake.dto.EarthquakeApiResponse;
+import cl.exercise.earthquake.dto.EarthquakeRequest;
+import cl.exercise.earthquake.dto.EarthquakeResponse;
 import cl.exercise.earthquake.service.EarthquakeInternalService;
-import cl.exercise.earthquake.transformer.BasicRequest;
-import cl.exercise.earthquake.transformer.EarthquakeResponse;
-import cl.exercise.earthquake.transformer.ResponseTransformer;
-import java.util.LinkedList;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.SneakyThrows;
@@ -26,27 +25,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-@RequestMapping
+@RequestMapping("/search")
 @Transactional(transactionManager = "transactionManagerEarthquake")
 public class EarthquakeController {
-
-  @Autowired private ResponseTransformer responseTransformer;
-
   @Autowired private EarthquakeInternalService service;
 
   @SneakyThrows
   @GetMapping("/all")
   public ResponseEntity<List<EarthquakeResponse>> getAll() {
 
-    List response = new LinkedList();
-
+    List<EarthquakeResponse> response = service.getAll();
     return new ResponseEntity<>(response, response == null ? HttpStatus.NO_CONTENT : HttpStatus.OK);
   }
 
   @SneakyThrows
   @PostMapping("/dates")
-  public ResponseEntity<List<EarthquakeResponse>> findByDates(
-      @Valid @RequestBody BasicRequest request, BindingResult result) {
+  public ResponseEntity<List<EarthquakeApiResponse>> findByDates(
+      @Valid @RequestBody EarthquakeRequest request, BindingResult result) {
     if (StringUtils.isEmpty(request.getFechaInicio())
         || StringUtils.isEmpty(request.getFechaFin())
         || result.hasErrors()) {
@@ -64,19 +59,19 @@ public class EarthquakeController {
               + " es mayor que fechaFin: "
               + request.getFechaFin());
     }
-    List<EarthquakeResponse> response = service.getInfoByDateAndMinMagnitude(request);
+    List<EarthquakeApiResponse> response = service.getInfoByDateAndMinMagnitude(request);
     return new ResponseEntity<>(response, response == null ? HttpStatus.NO_CONTENT : HttpStatus.OK);
   }
 
   @SneakyThrows
   @PostMapping("/magnitudes")
-  public ResponseEntity<List<EarthquakeResponse>> findByMagnitudes(
-      @Valid @RequestBody BasicRequest request) {
+  public ResponseEntity<List<EarthquakeApiResponse>> findByMagnitudes(
+      @Valid @RequestBody EarthquakeRequest request) {
 
     if (request.getMagnitudeMin() > request.getMagnitudeMax())
       throw new IllegalArgumentException("[Error] Magnitud Min es mayor que Magnitude Max");
 
-    List<EarthquakeResponse> response = service.getInfoByMagnitudes(request);
+    List<EarthquakeApiResponse> response = service.getInfoByMagnitudes(request);
     return new ResponseEntity<>(response, response == null ? HttpStatus.NO_CONTENT : HttpStatus.OK);
   }
 }

@@ -1,8 +1,8 @@
 package cl.exercise.earthquake.security;
 
-import static cl.exercise.earthquake.security.JWTAuthenticationFilter.HEADER_STRING;
-import static cl.exercise.earthquake.security.JWTAuthenticationFilter.SECRET;
-import static cl.exercise.earthquake.security.JWTAuthenticationFilter.TOKEN_PREFIX;
+import static cl.exercise.earthquake.security.JWTConstants.HEADER_STRING;
+import static cl.exercise.earthquake.security.JWTConstants.SECRET_PASSWORD;
+import static cl.exercise.earthquake.security.JWTConstants.TOKEN_PREFIX;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -44,7 +44,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     String token = request.getHeader(HEADER_STRING);
     if (token != null) {
       String user =
-          JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
+          JWT.require(Algorithm.HMAC512(SECRET_PASSWORD.getBytes()))
               .build()
               .verify(token.replace(TOKEN_PREFIX, ""))
               .getSubject();

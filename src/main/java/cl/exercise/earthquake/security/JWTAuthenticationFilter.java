@@ -1,5 +1,9 @@
 package cl.exercise.earthquake.security;
 
+import static cl.exercise.earthquake.security.JWTConstants.EXPIRATION_TIME;
+import static cl.exercise.earthquake.security.JWTConstants.HEADER_STRING;
+import static cl.exercise.earthquake.security.JWTConstants.SECRET_PASSWORD;
+import static cl.exercise.earthquake.security.JWTConstants.TOKEN_PREFIX;
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 
 import cl.exercise.earthquake.security.model.UserLogin;
@@ -19,16 +23,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-  private AuthenticationManager authenticationManager;
-
-  public static final String SECRET =
-      "$2y$12$SffLIjurvLJ3WwFHmbalne3TSaXTlZELCU.0Mlp9lPhLC8wr1FKi2"; // my5ecre7P@ssw0rd
-
-  public static final String TOKEN_PREFIX = "Bearer ";
-
-  public static final String HEADER_STRING = "Authorization";
-
-  public static final long EXPIRATION_TIME = 4_000_000;
+  private final AuthenticationManager authenticationManager;
 
   public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
     this.authenticationManager = authenticationManager;
@@ -54,7 +49,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         JWT.create()
             .withSubject(((User) auth.getPrincipal()).getUsername())
             .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-            .sign(HMAC512(SECRET.getBytes()));
+            .sign(HMAC512(SECRET_PASSWORD.getBytes()));
 
     ObjectMapper mapper = new ObjectMapper();
     ObjectNode result = mapper.createObjectNode();

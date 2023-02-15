@@ -1,15 +1,14 @@
 package cl.exercise.earthquake.service;
 
-import static cl.exercise.earthquake.utils.Utils.getStringToDateFormatComplete;
-
+import cl.exercise.earthquake.dto.EarthquakeApiResponse;
+import cl.exercise.earthquake.dto.EarthquakeRequest;
+import cl.exercise.earthquake.dto.EarthquakeResponse;
 import cl.exercise.earthquake.message.producer.ProducerService;
-import cl.exercise.earthquake.model.EarthquakeModel;
 import cl.exercise.earthquake.repository.EarthquakeRepository;
-import cl.exercise.earthquake.transformer.BasicRequest;
-import cl.exercise.earthquake.transformer.EarthquakeResponse;
 import cl.exercise.earthquake.transformer.ResponseTransformer;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import lombok.SneakyThrows;
@@ -17,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 @Service
 @Slf4j
@@ -42,35 +40,35 @@ public class EarthquakeInternalService {
     this.producer = producer;
   }
 
-  public List<EarthquakeResponse> getInfoByDateAndMinMagnitude(BasicRequest request) {
+  public List<EarthquakeApiResponse> getInfoByDateAndMinMagnitude(EarthquakeRequest request) {
     List<Map<String, Object>> result =
         (new ObjectMapper())
             .convertValue(
                 apiService.callEarthquakeByDateAndMinMagnitude(request).get("features"),
-                new TypeReference<List<Map<String, Object>>>() {});
+                new TypeReference<>() {});
 
-    List<EarthquakeResponse> response =
-        transformer.transformApiResponseToEarthquakeResponse(result);
+    List<EarthquakeApiResponse> response =
+        transformer.transformApiResponseToEarthquakeApiResponse(result);
     sendResponse(request, response);
     return response;
   }
 
-  public List<EarthquakeResponse> getInfoByMagnitudes(BasicRequest request) {
+  public List<EarthquakeApiResponse> getInfoByMagnitudes(EarthquakeRequest request) {
     List<Map<String, Object>> result =
         (new ObjectMapper())
             .convertValue(
                 apiService.callEarthquakeByMagnitudes(request).get("features"),
-                new TypeReference<List<Map<String, Object>>>() {});
+                new TypeReference<>() {});
 
-    List<EarthquakeResponse> response =
-        transformer.transformApiResponseToEarthquakeResponse(result);
+    List<EarthquakeApiResponse> response =
+        transformer.transformApiResponseToEarthquakeApiResponse(result);
     sendResponse(request, response);
     return response;
   }
 
   @Async
   @SneakyThrows
-  void sendResponse(BasicRequest request, List<EarthquakeResponse> response) {
+  void sendResponse(EarthquakeRequest request, List<EarthquakeApiResponse> response) {
     if (!CollectionUtils.isEmpty(response)) {
       save(request, response);
       response.forEach(e -> producer.sendMessage(request, e));
@@ -78,26 +76,25 @@ public class EarthquakeInternalService {
   }
 
   @SneakyThrows
-  private void save(BasicRequest request, List<EarthquakeResponse> responses) {
+  private void save(EarthquakeRequest request, List<EarthquakeApiResponse> responses) {
     log.debug("--> saving {}", request.toString());
-    repository.save(
-        EarthquakeModel.builder()
-            .fechaInicio(
-                StringUtils.isEmpty(request.getFechaInicio())
-                    ? null
-                    : getStringToDateFormatComplete(request.getFechaInicio()))
-            .fechaFin(
-                StringUtils.isEmpty(request.getFechaFin())
-                    ? null
-                    : getStringToDateFormatComplete(request.getFechaFin()))
-            .origen("POST")
-            .observacion(
-                StringUtils.isEmpty(request.getFechaInicio())
-                    ? "Buscando magnitudes"
-                    : "Buscando por fechas y magnitude min")
-            .magnitudMin(request.getMagnitudeMin())
-            .magnitudMax(request.getMagnitudeMax())
-            .salida(new ObjectMapper().writeValueAsString(responses))
-            .build());
+    repository.save(transformer.transformRequestToEarthquakeModel(request,responses));
+  }
+
+  public List<EarthquakeResponse> getAll(){
+    log.debug("-->getting all");
+    List<EarthquakeResponse> earthquakeResponses = new LinkedList<>();
+    repository.findAll().forEach(m -> earthquakeResponses.add(
+        EarthquakeResponse.builder()
+            .createdAt(m.getCreatedAt().toString())
+            .fechaInicio(m.getFechaInicio().toString())
+            .fechaFin(m.getFechaFin().toString())
+            .magnitudeMin(m.getMagnitudMin())
+            .magnitudeMax(m.getMagnitudMax())
+            .observacion(m.getObservacion())
+            .origen(m.getOrigen())
+            .build()
+    ));
+    return earthquakeResponses;
   }
 }

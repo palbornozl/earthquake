@@ -9,11 +9,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8099:8099"
-  redis:
-    image: redis
-    command: redis-server --port 6099
-    ports:
-      - "6099:6099"
   zookeeper:
     image: wurstmeister/zookeeper
     ports:

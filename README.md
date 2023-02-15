@@ -7,7 +7,16 @@ donde cada endpoint deberá hacer uso la API mencionada para obtener la informac
 solicitada (llamar a API segun especificacion de la misma).
 
 ### Contratos entrada
-- **/dates**: Consultar terremotos entre dos fechas y una magnitud mínima
+- **/earthquake/authenticate**: Crear token según usuario y contraseña
+
+*Contrato de entrada:*
+```json
+{
+  "username": "admin",
+  "password": "my5ecre7P@ssw0rd"
+}
+```
+- **/earthquake/search/dates**: Consultar terremotos entre dos fechas y una magnitud mínima, debe agregar token creado como Bearer
 
 *Contrato de entrada:*
 ```json
@@ -17,7 +26,7 @@ solicitada (llamar a API segun especificacion de la misma).
   "magnitudeMinima": 6.5
 }
 ```
-- **/magnitudes**: Consultar terremotos entre dos magnitudes
+- **/earthquake/search/magnitudes**: Consultar terremotos entre dos magnitudes, debe agregar token creado como Bearer
 
 *Contrato de entrada*
 ```json
@@ -48,16 +57,16 @@ El resultado es almacenado en una base de datos relacional embebida (H2), cuya t
 *Schema*: earthquake
 *Tabla*: earthquake
 
-|nombre campo|observaciones
+|nombre campo|observaciones|
 |---|---|
-|create_at|Llave primaria, fecha de insercion registro, valor por defecto
-|origen| POST / KAFKA clasificion de quien persiste
-|observacion|descripcion de el origen
-|fecha_inicio|Fecha inicio búsqueda
-|fecha_fin|Fecha fin búsqueda
-|magnitud_min|Magnitud minima busqueda
-|magnitud_max|Magnitud maxima busqueda
-|salida|Resultado busqueda (json)
+|create_at|Llave primaria, fecha de insercion registro, valor por defecto|
+|origen| POST / KAFKA clasificion de quien persiste|
+|observacion|descripcion de el origen|
+|fecha_inicio|Fecha inicio búsqueda|
+|fecha_fin|Fecha fin búsqueda|
+|magnitud_min|Magnitud minima busqueda|
+|magnitud_max|Magnitud maxima busqueda|
+|salida|Resultado busqueda (json)|
 
 ## Componentes
 - SpringBoot
@@ -72,28 +81,9 @@ Requisitos
 - docker / docker-compose
 - Rest Client
 
-#### Docker
-Ejecutar comando: 
-
-`docker-compose -f docker-compose.yml up -d --build zookeeper kafka`
-
-#### Maven
-Ejecutar comando: 
-
-```shell script
-mvn clean install 
-    -DDB_URL=jdbc:h2:mem:earthquake 
-    -DDB_USER=sa 
-    -DDB_PASSWORD=password 
-    -DDB_DIALECT=H2Dialect 
-    -DDB_DRIVER=org.h2.Driver 
-    -DLOG_LEVEL=INFO
-    -DKAFKA_HOST=localhost 
-    -DKAFKA_PORT=9092
-```
-Una vez generado el archivo *target/earthquake-1.0.0.jar* ejecutar:
-
-`docker-compose -f docker-compose.yml up -d --build earthquake`
+#### Docker compose
+Ejecutar comando:
+`docker-compose -f docker-compose.yml up`
 
 #### Rest Client
 - Importar archivo restClientEarthquake.json
@@ -101,7 +91,7 @@ Una vez generado el archivo *target/earthquake-1.0.0.jar* ejecutar:
 - Para los otros rest se debe cambiar el token Bearer con el obtenido 
 
 #### Acceso a BD
-Vía browser http://localhost:8099/searchEarthquake/h2-console
+Vía browser http://localhost:8099/earthquake/h2-console
 - JDBC URL: `jdbc:h2:mem:earthquake`
 - User Name: `sa`
 - Password: `password`
@@ -110,5 +100,3 @@ Para terminar se ejecuta:
 
 `docker-compose -f docker-compose.yml stop earthquake kafka zookeeper`
 
-#### PS.
-Para ambientes con **zsh** puede ejecutar el script `run.sh`

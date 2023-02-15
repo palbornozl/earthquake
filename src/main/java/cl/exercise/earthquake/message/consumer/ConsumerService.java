@@ -3,10 +3,10 @@ package cl.exercise.earthquake.message.consumer;
 import static cl.exercise.earthquake.utils.Utils.getStringToDateFormatComplete;
 import static cl.exercise.earthquake.utils.Utils.isJSONValid;
 
+import cl.exercise.earthquake.dto.EarthquakeApiResponse;
+import cl.exercise.earthquake.dto.EarthquakeRequest;
 import cl.exercise.earthquake.model.EarthquakeModel;
 import cl.exercise.earthquake.repository.EarthquakeRepository;
-import cl.exercise.earthquake.transformer.BasicRequest;
-import cl.exercise.earthquake.transformer.EarthquakeResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import lombok.SneakyThrows;
@@ -57,22 +57,22 @@ public final class ConsumerService {
                 + "Timestamp [%d]",
             key, message, partition, topic, ts));
 
-    BasicRequest request =
+    EarthquakeRequest request =
         new ObjectMapper()
             .readValue(
                 new ObjectMapper().readTree(message).get("request").textValue(),
-                BasicRequest.class);
+                EarthquakeRequest.class);
 
-    EarthquakeResponse responose =
+    EarthquakeApiResponse responose =
         new ObjectMapper()
             .readValue(
                 new ObjectMapper().readTree(message).get("response").textValue(),
-                EarthquakeResponse.class);
+                EarthquakeApiResponse.class);
     save(request, responose);
   }
 
   @SneakyThrows
-  private void save(BasicRequest request, EarthquakeResponse responses) {
+  private void save(EarthquakeRequest request, EarthquakeApiResponse responses) {
     log.debug("--> saving {}", request.toString());
     repository.save(
         EarthquakeModel.builder()

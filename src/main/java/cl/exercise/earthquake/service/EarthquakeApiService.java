@@ -1,6 +1,6 @@
 package cl.exercise.earthquake.service;
 
-import cl.exercise.earthquake.transformer.BasicRequest;
+import cl.exercise.earthquake.dto.EarthquakeRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +23,8 @@ public class EarthquakeApiService {
   }
 
   @SneakyThrows
-  public JsonNode callEarthquakeByDateAndMinMagnitude(BasicRequest request) {
-    MultiValueMap parameters = new LinkedMultiValueMap();
+  public JsonNode callEarthquakeByDateAndMinMagnitude(EarthquakeRequest request) {
+    MultiValueMap<String,String> parameters = new LinkedMultiValueMap<>();
     parameters.add("starttime", request.getFechaInicio());
     parameters.add("endtime", request.getFechaFin());
     parameters.add("minmagnitude", request.getMagnitudeMin().toString());
@@ -33,15 +33,15 @@ public class EarthquakeApiService {
   }
 
   @SneakyThrows
-  public JsonNode callEarthquakeByMagnitudes(BasicRequest request) {
-    MultiValueMap parameters = new LinkedMultiValueMap();
+  public JsonNode callEarthquakeByMagnitudes(EarthquakeRequest request) {
+    MultiValueMap<String,String> parameters = new LinkedMultiValueMap<>();
     parameters.add("minmagnitude", request.getMagnitudeMin().toString());
     parameters.add("maxmagnitude", request.getMagnitudeMax().toString());
 
     return callEarthquakeApi(parameters);
   }
 
-  private JsonNode callEarthquakeApi(MultiValueMap parameters) {
+  private JsonNode callEarthquakeApi(MultiValueMap<String,String> parameters) {
     StopWatch watch = new StopWatch();
     log.info("Call earthquake {}", parameters);
     watch.start();

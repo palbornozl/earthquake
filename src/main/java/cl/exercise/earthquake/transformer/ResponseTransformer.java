@@ -1,7 +1,12 @@
 package cl.exercise.earthquake.transformer;
 
 import static cl.exercise.earthquake.utils.Utils.getDateFormatCompleteToString;
+import static cl.exercise.earthquake.utils.Utils.getStringToDateFormatComplete;
 
+import cl.exercise.earthquake.dto.EarthquakeApiResponse;
+import cl.exercise.earthquake.dto.EarthquakeRequest;
+import cl.exercise.earthquake.model.EarthquakeModel;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,21 +14,24 @@ import java.util.Map;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 @Slf4j
 public class ResponseTransformer {
 
+  public static final String TSUNAMI = "tsunami";
+
   @SneakyThrows
-  public List<EarthquakeResponse> transformApiResponseToEarthquakeResponse(
+  public List<EarthquakeApiResponse> transformApiResponseToEarthquakeApiResponse(
       List<Map<String, Object>> result) {
-    List<EarthquakeResponse> responses = new LinkedList<>();
+    List<EarthquakeApiResponse> responses = new LinkedList<>();
     result.forEach(
         l -> {
           Map<String, Object> map = (Map<String, Object>) l.get("properties");
           log.debug("--> {}", map.toString());
           responses.add(
-              EarthquakeResponse.builder()
+              EarthquakeApiResponse.builder()
                   .magnitude(
                       map.get("mag").getClass().getSimpleName().equalsIgnoreCase("Double")
                           ? (Double) map.get("mag")
@@ -34,9 +42,9 @@ public class ResponseTransformer {
                   .alert((String) map.get("alert"))
                   .status((String) map.get("status"))
                   .tsunami(
-                      map.get("tsunami").getClass().getSimpleName().equalsIgnoreCase("Integer")
-                          ? (Integer) map.get("tsunami")
-                          : ((Double) map.get("tsunami")).intValue())
+                      map.get(TSUNAMI).getClass().getSimpleName().equalsIgnoreCase("Integer")
+                          ? (Integer) map.get(TSUNAMI)
+                          : ((Double) map.get(TSUNAMI)).intValue())
                   .magnitudeType((String) map.get("magType"))
                   .type((String) map.get("type"))
                   .title((String) map.get("title"))
@@ -44,4 +52,26 @@ public class ResponseTransformer {
         });
     return responses;
   }
+  @SneakyThrows
+  public EarthquakeModel transformRequestToEarthquakeModel(EarthquakeRequest request, List<EarthquakeApiResponse> responses){
+    return EarthquakeModel.builder()
+        .fechaInicio(
+            StringUtils.isEmpty(request.getFechaInicio())
+                ? null
+                : getStringToDateFormatComplete(request.getFechaInicio()))
+        .fechaFin(
+            StringUtils.isEmpty(request.getFechaFin())
+                ? null
+                : getStringToDateFormatComplete(request.getFechaFin()))
+        .origen("POST")
+        .observacion(
+            StringUtils.isEmpty(request.getFechaInicio())
+                ? "Buscando magnitudes"
+                : "Buscando por fechas y magnitude min")
+        .magnitudMin(request.getMagnitudeMin())
+        .magnitudMax(request.getMagnitudeMax())
+        .salida(new ObjectMapper().writeValueAsString(responses))
+        .build();
+  }
+
 }
