@@ -2,6 +2,7 @@ package cl.exercise.earthquake.service;
 
 import cl.exercise.earthquake.dto.EarthquakeRequest;
 import com.fasterxml.jackson.databind.JsonNode;
+import java.net.URI;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -49,7 +50,11 @@ public class EarthquakeApiService {
     JsonNode response =
         this.webClient
             .get()
-            .uri(uriBuilder -> uriBuilder.queryParams(parameters).build())
+            .uri(uriBuilder -> {
+              URI ub = uriBuilder.queryParams(parameters).build();
+              log.debug(">>> {} -- {} -- {}", ub.getPath(), ub.getQuery(), ub);
+              return ub;
+            })
             .retrieve()
             .onStatus(
                 HttpStatus::is4xxClientError,

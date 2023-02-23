@@ -4,6 +4,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
 import java.util.concurrent.TimeUnit;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -16,20 +17,24 @@ import reactor.netty.tcp.TcpClient;
 @Component
 public class WebClientConfig {
 
-  private static final String BASE_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson";
+  @Value(value = "${earthquake.api.url}")
+  private String baseUrl;
+
+  @Value(value = "${earthquake.api.timeout}")
+  private int timeout;
 
   @Bean
   public WebClient getWebClient() {
     TcpClient tcpClient =
         TcpClient.create()
-            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 2000)
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, timeout)
             .doOnConnected(
                 connection -> {
-                  connection.addHandlerLast(new ReadTimeoutHandler(2000, TimeUnit.MILLISECONDS));
-                  connection.addHandlerLast(new WriteTimeoutHandler(2000, TimeUnit.MILLISECONDS));
+                  connection.addHandlerLast(new ReadTimeoutHandler(timeout, TimeUnit.MILLISECONDS));
+                  connection.addHandlerLast(new WriteTimeoutHandler(timeout, TimeUnit.MILLISECONDS));
                 });
     return WebClient.builder()
-        .baseUrl(BASE_URL)
+        .baseUrl(baseUrl)
         .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
         .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
         .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
